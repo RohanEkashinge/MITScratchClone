@@ -1,11 +1,61 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useState } from "react";
 import Icon from "./Icon";
 import { spritesAtom, activeSpriteAtom } from "../../util/atoms";
 import { useAtom } from "jotai";
+import { globalActionsAtom } from "../../util/atoms";
 
 function Sprites() {
-  const [sprites, setSprites] = useAtom(spritesAtom);
+
+  const [globalActions, setGlobalActions] = useAtom(globalActionsAtom);
+  const [sprites, setSprites] = useAtom(spritesAtom); // Get and set sprites
   const [activeSprite, setActiveSprite] = useAtom(activeSpriteAtom);
+
+    // Track selected global actions
+    const [selectedActions, setSelectedActions] = useState([]);
+    
+  // Apply global actions when globalActions changes
+  useEffect(() => {
+    if (globalActions.length > 0) {
+      console.log("Global Actions Updated:", globalActions);
+
+      // Create a new sprites array with updated positions/angles based on actions
+      const updatedSprites = sprites.map((sprite) => {
+        let newX = sprite.x;
+        let newY = sprite.y;
+        let newAngle = sprite.angle;
+
+        globalActions.forEach((action) => {
+          switch (action.type) {
+            case "move":
+              newX += action.value; // Move the sprite by the specified number of steps
+              break;
+            case "rotate":
+              newAngle += action.value; // Rotate the sprite by the specified angle
+              break;
+            case "goto":
+              newX = action.Xvalue; // Move sprite to specific X value
+              newY = action.Yvalue; // Move sprite to specific Y value
+              break;
+            case "repeat":
+              // Handle repeat logic if necessary
+              break;
+            default:
+              break;
+          }
+        });
+
+        // Return a new sprite object with updated coordinates and angle
+        return { ...sprite, x: newX, y: newY, angle: newAngle };
+      });
+
+      // Update the sprites atom with the modified sprites
+      setSprites(updatedSprites);
+
+      // Clear global actions after applying them, to prevent re-execution
+      setGlobalActions([]); // Clears the actions after they are applied
+    }
+  }, [globalActions, sprites, setSprites, setGlobalActions]); // Trigger effect when globalActions or sprites change
 
   const handleUpload = (event) => {
     let file = event.target.files[0];
@@ -44,7 +94,7 @@ function Sprites() {
 
   return (
     <>
-      <div className="font-bold"> {"Sprites Manager"} </div>
+      <div className="font-bold">{"Sprites Manager"}</div>
       <div className="flex flex-col gap-2 mt-2">
         {sprites.map((item, idx) => {
           return (
@@ -52,10 +102,8 @@ function Sprites() {
               key={idx + 1}
               onClick={handleManage}
               id={`sprite-${idx}`}
-              className={`flex w-45 relative flex-col gap-2 rounded-md shadow-xl  p-4 items-center justify-center ${
-                activeSprite == idx
-                  ? "border-solid border-green-600 border-2"
-                  : ""
+              className={`flex w-45 relative flex-col gap-2 rounded-md shadow-xl p-4 items-center justify-center ${
+                activeSprite === idx ? "border-solid border-green-600 border-2" : ""
               }`}
             >
               <div
@@ -89,7 +137,7 @@ function Sprites() {
             id="spriteInput"
             type="file"
             accept="image/png, image/gif, image/jpeg"
-            className=" hidden "
+            className="hidden"
           />
         </div>
       </div>

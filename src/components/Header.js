@@ -3,13 +3,55 @@ import { spritesAtom, heroFeatureTriggerAtom } from "../../util/atoms";
 import { useAtom } from "jotai";
 import { TiFlag } from "react-icons/ti";
 import { FiOctagon } from "react-icons/fi";
+import { globalActionsAtom } from "../../util/atoms";
 
 
 function Header() {
   const [sprites, setSprites] = useAtom(spritesAtom);
+  const [globalActions] = useAtom(globalActionsAtom); 
   const [heroFeatureTrigger, setHeroFeatureTrigger] = useAtom(
     heroFeatureTriggerAtom
   );
+
+    // Function to execute global actions on each sprite
+    const executeGlobalActions = async (sprite) => {
+      let newX = sprite.x;
+      let newY = sprite.y;
+      let newAngle = sprite.angle;
+  
+      for (let action of globalActions) {
+        switch (action.type) {
+          case "move":
+            newX += action.value;
+            break;
+          case "rotate":
+            newAngle += action.value;
+            break;
+          case "goto":
+            newX = action.Xvalue;
+            newY = action.Yvalue;
+            break;
+          case "repeat":
+            // Handle repeat logic (can be skipped for simplicity here)
+            break;
+          default:
+            break;
+        }
+  
+        // Update sprite state with new values
+        setSprites((prevSprites) =>
+          prevSprites.map((s, idx) =>
+            idx === sprite.idx ? { ...s, x: newX, y: newY, angle: newAngle } : s
+          )
+        );
+      }
+    };
+
+    const handleRunGlobalActions = () => {
+      sprites.forEach((sprite) => {
+        executeGlobalActions(sprite);
+      });
+    };
 
   const handleRun = async () => {
     sprites.forEach((sprite, idx) => {
@@ -85,7 +127,7 @@ function Header() {
 
   return (
     <div className="pl-2 pb-2 flex items-center justify-around">
-      <h1>MIT Scratch Clone </h1>
+      <h1 className="text-4xl font-bold text-black">MIT Scratch Clone</h1>
       <div className="flex  gap-2">
         <button
           onClick={handleHeroFeature}
