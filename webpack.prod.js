@@ -19,9 +19,9 @@ module.exports = merge([
       ],
     },
     output: {
-      path: path.resolve(__dirname, 'build'),  // This is where the files will be saved
-      filename: '[name].js',
-      clean: true,  
+      // path: path.resolve(__dirname, 'build'),  // This is where the files will be saved
+      // filename: '[name].js',
+      // clean: true,  
     },
   },
 ]);
