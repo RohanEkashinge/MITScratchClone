@@ -1,35 +1,37 @@
-import React, { useState } from "react";
+import React from "react";
 
 function Sprite({ item, idx }) {
-  const [dragging, setDragging] = useState(false);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  let element = null;
+  let clientX = 0;
+  let clientY = 0;
+  let newClientX = 0;
+  let newClientY = 0;
 
   const handleMouseDown = (e) => {
     e.preventDefault();
-    setDragging(true);
-    setOffset({
-      x: e.clientX - item.x,
-      y: e.clientY - item.y,
-    });
+    element = e.currentTarget;
+
+    clientX = e.clientX;
+    clientY = e.clientY;
 
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
   };
 
   const handleMouseMove = (e) => {
-    if (!dragging) return;
+    e.preventDefault();
 
-    const newX = e.clientX - offset.x;
-    const newY = e.clientY - offset.y;
+    newClientX = clientX - e.clientX;
+    newClientY = clientY - e.clientY;
 
-    item.x = newX;  // Directly update position in the sprite data
-    item.y = newY;
+    clientX = e.clientX;
+    clientY = e.clientY;
 
-    e.target.style.transform = `translate(${newX}px, ${newY}px)`;
+    element.style.top = element.offsetTop - newClientY + "px";
+    element.style.left = element.offsetLeft - newClientX + "px";
   };
 
   const handleMouseUp = () => {
-    setDragging(false);
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
   };
@@ -42,13 +44,13 @@ function Sprite({ item, idx }) {
       style={{
         position: "absolute",
         transform: `translate(${item.x}px, ${item.y}px) rotate(${item.angle}deg)`,
-        cursor: dragging ? "grabbing" : "grab",
+        transition: "transform 0.3s ease",
+        cursor: "grab",
         height: "120px",
         width: "120px",
-        transition: "transform 0.1s ease",
       }}
     >
-      <img src={item.icon} alt={`Sprite ${idx}`} />
+      <img src={item.icon} />
     </div>
   );
 }

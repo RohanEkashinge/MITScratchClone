@@ -10,17 +10,8 @@ export const spritesAtom = atom([
     actions: [],
   },
 ]);
-
 export const activeSpriteAtom = atom(0);
 
-
-
-// Add derived atom for sprite count (just an example)
-export const spriteCountAtom = atom((get) => get(spritesAtom).length);
-
-// Derived atoms could be used here to manage updates to other complex states
-export const activeSpriteDetailsAtom = atom((get) => {
-  const sprites = get(spritesAtom);
-  const activeSpriteIndex = get(activeSpriteAtom);
-  return sprites[activeSpriteIndex];
-});
+export const heroFeatureTriggerAtom = atom(false);
+export const char1StepsAtom = atom(250);
+export const char2StepsAtom = atom(250);

@@ -1,19 +1,22 @@
 import React from "react";
+import { spritesAtom, heroFeatureTriggerAtom } from "../../util/atoms";
 import { useAtom } from "jotai";
-import { spritesAtom } from "../../util/atoms"; // Ensure spritesAtom is correctly imported
-import colors from "tailwindcss/colors";
+import { TiFlag } from "react-icons/ti";
+import { FiOctagon } from "react-icons/fi";
+
 
 function Header() {
   const [sprites, setSprites] = useAtom(spritesAtom);
+  const [heroFeatureTrigger, setHeroFeatureTrigger] = useAtom(
+    heroFeatureTriggerAtom
+  );
 
-  // Function to run the sprite actions
   const handleRun = async () => {
     sprites.forEach((sprite, idx) => {
       executeSpriteActions(sprite, idx);
     });
   };
 
-  // Function to execute sprite actions (move, rotate, goto, etc.)
   const executeSpriteActions = async (sprite, spriteIdx) => {
     let newX = sprite.x;
     let newY = sprite.y;
@@ -52,7 +55,7 @@ function Header() {
       for (let index = 0; index < actions.length; index++) {
         const action = actions[index];
 
-        if (action.type === "repeat") {
+        if (action.type == "repeat") {
           for (let j = 0; j < action.value; j++) {
             for (let action of actions) {
               await executeAction(action);
@@ -68,35 +71,45 @@ function Header() {
     await executeActions(sprite.actions);
   };
 
-  // Function to reset the sprite positions and angles
   const handleReset = () => {
     setSprites((prevSprites) =>
-      prevSprites.map((s) => {
+      prevSprites.map((s, idx) => {
         return { ...s, x: 0, y: 0, angle: 0 };
       })
     );
   };
 
-  return (
-    <div className="bg-gradient-to-r from-teal-300 to-blue-400 text-white py-4 px-6 shadow-lg rounded-b-lg">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold" style={{ color: 'black' }}>MIT Scratch Clone</h1>
+  const handleHeroFeature = () => {
+    setHeroFeatureTrigger(!heroFeatureTrigger);
+  };
 
-        {/* Button Section */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={handleRun}
-            className="px-6 py-2 rounded-lg text-sm font-medium bg-green-500 hover:bg-green-400 transition duration-300"
-          >
-            Run
-          </button>
-          <button
-            onClick={handleReset}
-            className="px-6 py-2 rounded-lg text-sm font-medium bg-red-500 hover:bg-red-400 transition duration-300"
-          >
-            Reset
-          </button>
-        </div>
+  return (
+    <div className="pl-2 pb-2 flex items-center justify-around">
+      <h1>MIT Scratch Clone </h1>
+      <div className="flex  gap-2">
+        <button
+          onClick={handleHeroFeature}
+          className="p-2 rounded-md text-white bg-blue-900 hover:bg-blue-600 cursor-pointer"
+        >
+          {!heroFeatureTrigger ? "Hero Feature" : "Back"}
+        </button>
+        {!heroFeatureTrigger && (
+          <>
+            <button
+              onClick={handleRun}
+              className="p-2 text-white rounded-md bg-green-400 hover:bg-green-600 cursor-pointer"
+            >
+              <TiFlag />
+            </button>
+            <button
+              onClick={handleReset}
+              className="p-2 text-white rounded-md bg-red-500 hover:bg-red-700 cursor-pointer"
+            >
+              <FiOctagon />
+
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

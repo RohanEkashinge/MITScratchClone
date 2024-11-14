@@ -23,11 +23,11 @@ function CustomizeSteps() {
         />
       </div>
       <div className="p-2 bg-blue-500 w-80 rounded-md">
-        <label htmlFor="char-2-input" className="text-white">
-          Char 2 Steps{" "}
+        <label htmlFor="char-1-input" className="text-white">
+          Char 1 Steps{" "}
         </label>
         <input
-          id="char-2-input"
+          id="char-1-input"
           type="number"
           min={1}
           className="text-black w-12 rounded-sm px-1"

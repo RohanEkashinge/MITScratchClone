@@ -22,31 +22,35 @@ export default function MidArea() {
       action.value = parseInt(value);
     }
 
-    setSprites((prevSprites) => {
-      return prevSprites.map((item, idx) => {
-        if (activeSprite === idx) {
-          return {
-            ...item,
-            actions: [...item.actions, action], // Immutable update
-          };
-        }
-        return item;
-      });
+    let tempState = sprites.map((item, idx) => {
+      if (activeSprite == idx) {
+        return {
+          ...item,
+          actions: item.actions.concat(action),
+        };
+      }
+
+      return item;
     });
+
+    setSprites(tempState);
   };
 
   const handleDelete = (itemIdx) => {
-    setSprites((prevSprites) => {
-      return prevSprites.map((item, idx) => {
-        if (activeSprite === idx) {
-          return {
-            ...item,
-            actions: item.actions.filter((action, actionIndex) => actionIndex !== itemIdx),
-          };
-        }
-        return item;
-      });
+    let tempState = sprites.map((item, idx) => {
+      if (activeSprite == idx) {
+        return {
+          ...item,
+          actions: item.actions.filter(
+            (action, actionIndex) => actionIndex != itemIdx
+          ),
+        };
+      }
+
+      return item;
     });
+
+    setSprites(tempState);
   };
 
   const handleDragOver = (e) => {
@@ -68,10 +72,11 @@ export default function MidArea() {
             >
               <div
                 className="absolute top-2 right-1 text-red-500 text-xs cursor-pointer hover:text-gray-300"
-                onClick={() => handleDelete(idx)}
+                onClick={(e) => handleDelete(idx)}
               >
-                <Icon name="trash" size={15} />
+                <Icon name={"trash"} size={15} />
               </div>
+
               {item.text}
               {item.value
                 ? item.value

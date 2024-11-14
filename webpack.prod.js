@@ -1,6 +1,8 @@
 const { merge } = require("webpack-merge");
 const common = require("./webpack.common.js");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const path = require('path');
+
 
 process.env["NODE_ENV"] = "production";
 
@@ -15,6 +17,11 @@ module.exports = merge([
         // `...`,
         new CssMinimizerPlugin(),
       ],
+    },
+    output: {
+      path: path.resolve(__dirname, 'build'),  // This is where the files will be saved
+      filename: '[name].js',
+      clean: true,  
     },
   },
 ]);

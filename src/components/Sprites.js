@@ -9,8 +9,6 @@ function Sprites() {
 
   const handleUpload = (event) => {
     let file = event.target.files[0];
-    if (!file) return;
-
     let data = {
       icon: URL.createObjectURL(file),
       x: 0,
@@ -23,53 +21,67 @@ function Sprites() {
 
   const handleManage = (event) => {
     event.preventDefault();
-    const elementId = event.currentTarget.id.split("-")[1];
-    setActiveSprite(Number(elementId));
+    let element = event.currentTarget.id;
+    let id = element.split("-")[1];
+    setActiveSprite(Number(id));
   };
 
   const handleDelete = (event) => {
-    const confirmed = window.confirm("Are you sure you want to delete this sprite?");
-    if (!confirmed) return;
-
     let parent = event.currentTarget.parentNode;
     let id = parent.id.split("-")[1];
-    setSprites(sprites.filter((_, idx) => idx !== parseInt(id)));
+    setSprites(sprites.filter((_, idx) => idx != parseInt(id)));
 
-    // Select a new random sprite or set to null
-    const getRandomIdx = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-    setActiveSprite(sprites.length > 0 ? getRandomIdx(0, sprites.length - 1) : null);
-
+    const getRandomIdx = (min, max) => {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    };
+    setActiveSprite(
+      sprites.length > 0 ? getRandomIdx(0, sprites.length - 2) : null
+    );
     event.stopPropagation();
   };
 
   return (
     <>
-      <div className="font-bold text-xl">Sprites Manager</div>
-      <div className="flex flex-col gap-4 mt-4">
-        {sprites.map((item, idx) => (
-          <div
-            key={idx}
-            id={`sprite-${idx}`}
-            onClick={handleManage}
-            className={`relative flex flex-col gap-2 rounded-lg shadow-lg p-4 items-center justify-center ${activeSprite === idx ? "border-2 border-green-600" : ""} hover:bg-gray-100 transition duration-200 ease-in-out`}
-          >
+      <div className="font-bold"> {"Sprites Manager"} </div>
+      <div className="flex flex-col gap-2 mt-2">
+        {sprites.map((item, idx) => {
+          return (
             <div
-              className="absolute top-0 right-0 cursor-pointer p-2 bg-red-500 text-white rounded-full"
-              onClick={handleDelete}
+              key={idx + 1}
+              onClick={handleManage}
+              id={`sprite-${idx}`}
+              className={`flex w-45 relative flex-col gap-2 rounded-md shadow-xl  p-4 items-center justify-center ${
+                activeSprite == idx
+                  ? "border-solid border-green-600 border-2"
+                  : ""
+              }`}
             >
-              <Icon name="trash" size={15} />
+              <div
+                className="absolute top-0 right-0 cursor-pointer p-2 bg-red-500 text-white rounded-md"
+                onClick={handleDelete}
+              >
+                <Icon name="trash" size={15} className="text-white" />
+              </div>
+              <div>
+                <img src={item.icon} />
+              </div>
+              <button className="cursor-pointer p-2 bg-blue-500 rounded-sm">
+                Click to manage
+              </button>
             </div>
-            <img src={item.icon} alt={`Sprite ${idx}`} className="w-24 h-24 object-cover" />
-            <button className="p-2 bg-blue-500 text-white rounded-sm mt-2">
-              Manage
-            </button>
-          </div>
-        ))}
+          );
+        })}
 
-        {/* Add New Sprite Block */}
-        <div className="flex flex-col gap-2 rounded-md border-4 border-dashed border-red-300 p-4 items-center justify-center">
-          <Icon name="id-badge" size={50} className="text-black" />
-          <label className="cursor-pointer p-2 bg-blue-500 text-white rounded-sm" htmlFor="spriteInput">
+        <div className="flex w-45 flex-col gap-2 rounded-md border-4 border-dashed border-red-300 p-4 items-center justify-center ">
+          <div>
+            <Icon name="id-badge" size={50} className="text-black" />
+          </div>
+          <label
+            className="cursor-pointer p-2 bg-blue-500 rounded-sm"
+            htmlFor="spriteInput"
+          >
             Click to Add
           </label>
           <input
@@ -77,7 +89,7 @@ function Sprites() {
             id="spriteInput"
             type="file"
             accept="image/png, image/gif, image/jpeg"
-            className="hidden"
+            className=" hidden "
           />
         </div>
       </div>
